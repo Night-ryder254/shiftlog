@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('attendance_records', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('shift_assignment_id')->constrained()->onDelete('cascade');
+            $table->timestamp('clock_in')->nullable();
+            $table->timestamp('clock_out')->nullable();
+            $table->enum('status', ['on_time', 'late', 'absent'])->default('absent');
             $table->timestamps();
         });
     }
