@@ -9,4 +9,19 @@ class Employee extends Model
 {
     /** @use HasFactory<\Database\Factories\EmployeeFactory> */
     use HasFactory;
+
+    public function user()
+{
+    return $this->belongsTo(User::class);
+}
+
+public function department()
+{
+    return $this->belongsTo(Department::class);
+}
+
+public function shiftAssignments()
+{
+    return $this->hasMany(ShiftAssignment::class);
+}
 }

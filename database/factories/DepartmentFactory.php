@@ -18,7 +18,8 @@ class DepartmentFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'branch_id' => \App\Models\Branch::factory(),
+            'name' => fake()->randomElement(['Front Office', 'Housekeeping', 'F&B', 'Kitchen']),
         ];
     }
 }

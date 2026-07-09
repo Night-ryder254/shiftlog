@@ -9,4 +9,14 @@ class Branch extends Model
 {
     /** @use HasFactory<\Database\Factories\BranchFactory> */
     use HasFactory;
+
+    public function departments()
+{
+    return $this->hasMany(Department::class);
+}
+
+public function shifts()
+{
+    return $this->hasMany(Shift::class);
+}
 }

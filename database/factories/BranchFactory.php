@@ -18,7 +18,8 @@ class BranchFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => fake()->randomElement(['Westlands Branch', 'CBD Branch', 'Karen Branch', 'Mombasa Road Branch']),
+            'location' => fake()->address(),
         ];
     }
 }

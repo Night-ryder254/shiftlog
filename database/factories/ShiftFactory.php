@@ -17,8 +17,18 @@ class ShiftFactory extends Factory
      */
     public function definition(): array
     {
+        $shiftType = fake()->randomElement(['Morning', 'Afternoon', 'Night']);
+        $times = [
+            'Morning' => ['07:00:00', '15:00:00'],
+            'Afternoon' => ['15:00:00', '23:00:00'],
+            'Night' => ['23:00:00', '07:00:00'],
+        ];
+
         return [
-            //
+            'branch_id' => \App\Models\Branch::factory(),
+            'label' => $shiftType,
+            'start_time' => $times[$shiftType][0],
+            'end_time' => $times[$shiftType][1],
         ];
     }
 }

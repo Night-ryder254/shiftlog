@@ -9,4 +9,9 @@ class AttendanceRecord extends Model
 {
     /** @use HasFactory<\Database\Factories\AttendanceRecordFactory> */
     use HasFactory;
+
+    public function shiftAssignment()
+{
+    return $this->belongsTo(ShiftAssignment::class);
+}
 }

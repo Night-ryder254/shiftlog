@@ -18,7 +18,9 @@ class ShiftAssignmentFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'employee_id' => \App\Models\Employee::factory(),
+            'shift_id' => \App\Models\Shift::factory(),
+            'date' => fake()->dateTimeBetween('-90 days', 'now')->format('Y-m-d'),
         ];
     }
 }
