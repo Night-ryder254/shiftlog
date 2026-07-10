@@ -46,7 +46,15 @@ class BranchController extends Controller
 
         $branch->load('departments.employees.user');
 
-        return view('branches.show', compact('branch'));
+        $recentAssignments = \App\Models\ShiftAssignment::whereHas('employee.department', function ($q) use ($branch) {
+                $q->where('branch_id', $branch->id);
+            })
+            ->whereBetween('date', [now()->subDays(7), now()])
+            ->with(['employee.user', 'shift', 'attendanceRecord'])
+            ->orderByDesc('date')
+            ->get();
+
+        return view('branches.show', compact('branch', 'recentAssignments'));
     }
 
     /**
