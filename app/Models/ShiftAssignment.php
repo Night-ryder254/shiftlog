@@ -10,6 +10,8 @@ class ShiftAssignment extends Model
     /** @use HasFactory<\Database\Factories\ShiftAssignmentFactory> */
     use HasFactory;
 
+    protected $fillable = ['employee_id', 'shift_id', 'date'];
+
     public function employee()
 {
     return $this->belongsTo(Employee::class);

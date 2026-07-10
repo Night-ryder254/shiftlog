@@ -10,6 +10,8 @@ class Shift extends Model
     /** @use HasFactory<\Database\Factories\ShiftFactory> */
     use HasFactory;
 
+    protected $fillable = ['branch_id', 'label', 'start_time', 'end_time'];
+
     public function branch()
 {
     return $this->belongsTo(Branch::class);

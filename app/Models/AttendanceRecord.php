@@ -10,6 +10,7 @@ class AttendanceRecord extends Model
     /** @use HasFactory<\Database\Factories\AttendanceRecordFactory> */
     use HasFactory;
 
+    protected $fillable = ['shift_assignment_id', 'clock_in', 'clock_out', 'status'];
     public function shiftAssignment()
 {
     return $this->belongsTo(ShiftAssignment::class);

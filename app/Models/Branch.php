@@ -10,6 +10,8 @@ class Branch extends Model
     /** @use HasFactory<\Database\Factories\BranchFactory> */
     use HasFactory;
 
+    protected $fillable = ['name', 'location'];
+
     public function departments()
 {
     return $this->hasMany(Department::class);
