@@ -8,7 +8,6 @@
 
 A production-style employee attendance and shift scheduling system built for multi-branch hospitality/retail businesses. Built to solve a real operational problem: hotel chains and retail businesses in Kenya often track staff shifts on paper or WhatsApp, leading to payroll disputes, unnoticed no-shows, and zero visibility for branch managers.
 
-**[Live Demo →](#)** *(link added after deployment)*
 **Demo credentials:** `manager@shiftlog.test` / `password` (scoped to one branch) or ask for admin access to see the full system.
 
 ---
@@ -47,6 +46,15 @@ ShiftLog solves this with a proper multi-tenant-style permission model, not just
 - **7-day attendance dashboard** — live view of shift assignments and attendance status (on time / late / absent) per branch
 - **Realistic seeded dataset** — 4 branches, 16 departments, 500 employees, and 5,000+ historical attendance records for a demo that feels like a real, in-use system rather than an empty shell
 - **Automated authorization tests** — 4 feature tests covering admin access, manager access, cross-branch denial, and guest redirection
+
+## Screenshots
+
+| Screenshot | What it shows |
+|---|---|
+| `Dashboard.png` | Logged-in dashboard after authentication |
+| `Branches.png` | Branch list scoped to the logged-in user's role |
+| `Attendance.png` | 7-day attendance table with status badges |
+| `Test Manager Unauthorized Access Denied.png` | proof a manager is blocked from viewing another branch's data |
 
 ## Architecture
 
@@ -178,4 +186,5 @@ tests/Feature/BranchPolicyTest.php           # Authorization test suite
 ## Author
 
 **Nigel Matekwa Alufwani**
+BSc Information Technology, KCA University · AWS Certified Cloud Practitioner
 [GitHub](https://github.com/Night-ryder254) · nigelmatekwa@gmail.com
