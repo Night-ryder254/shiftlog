@@ -8,7 +8,6 @@
 
 A production-style employee attendance and shift scheduling system built for multi-branch hospitality/retail businesses. Built to solve a real operational problem: hotel chains and retail businesses in Kenya often track staff shifts on paper or WhatsApp, leading to payroll disputes, unnoticed no-shows, and zero visibility for branch managers.
 
-**[Live Demo →](#)** *(link added after deployment)*
 **Demo credentials:** `manager@shiftlog.test` / `password` (scoped to one branch) or ask for admin access to see the full system.
 
 ---
