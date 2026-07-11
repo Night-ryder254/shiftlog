@@ -1,59 +1,181 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# ShiftLog — Multi-Branch Attendance & Shift Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+![Laravel](https://img.shields.io/badge/Laravel-11-FF2D20?style=flat&logo=laravel&logoColor=white)
+![PHP](https://img.shields.io/badge/PHP-8.2-777BB4?style=flat&logo=php&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat&logo=mysql&logoColor=white)
+![Tests](https://img.shields.io/badge/Tests-Passing-brightgreen?style=flat)
+![License](https://img.shields.io/badge/License-MIT-blue?style=flat)
 
-## About Laravel
+A production-style employee attendance and shift scheduling system built for multi-branch hospitality/retail businesses. Built to solve a real operational problem: hotel chains and retail businesses in Kenya often track staff shifts on paper or WhatsApp, leading to payroll disputes, unnoticed no-shows, and zero visibility for branch managers.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+**[Live Demo →](#)** *(link added after deployment)*
+**Demo credentials:** `manager@shiftlog.test` / `password` (scoped to one branch) or ask for admin access to see the full system.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Table of Contents
 
-## Learning Laravel
+- [The Problem](#the-problem)
+- [Key Features](#key-features)
+- [Screenshots](#screenshots)
+- [Architecture](#architecture)
+- [Tech Stack](#tech-stack)
+- [Authorization Model](#authorization-model)
+- [Local Setup](#local-setup)
+- [Testing](#testing)
+- [Project Structure](#project-structure)
+- [Roadmap](#roadmap)
+- [Known Limitations](#known-limitations)
+- [Author](#author)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## The Problem
 
-## Laravel Sponsors
+A hotel chain with multiple branches (Westlands, CBD, Karen, Mombasa Road) needs to know, at a glance:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- Who is scheduled to work today, at which branch, on which shift
+- Who showed up on time, who was late, and who was a no-show
+- All of this **scoped correctly** — a manager at one branch should never see another branch's staff or payroll-relevant attendance data
 
-### Premium Partners
+ShiftLog solves this with a proper multi-tenant-style permission model, not just a shared login for everyone.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## Key Features
 
-## Contributing
+- **Role-based access control** — Admin, Branch Manager, and Staff roles with real enforcement via Laravel Policies (not just hidden UI buttons)
+- **Branch-scoped data isolation** — a manager's queries are automatically filtered to their own branch at the database level; direct URL access to another branch returns a `403`, verified by automated tests
+- **7-day attendance dashboard** — live view of shift assignments and attendance status (on time / late / absent) per branch
+- **Realistic seeded dataset** — 4 branches, 16 departments, 500 employees, and 5,000+ historical attendance records for a demo that feels like a real, in-use system rather than an empty shell
+- **Automated authorization tests** — 4 feature tests covering admin access, manager access, cross-branch denial, and guest redirection
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Architecture
 
-## Code of Conduct
+### System Overview
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```
+┌─────────────┐      HTTPS       ┌──────────────────┐
+│   Browser   │ ───────────────▶ │  Laravel App       │
+│ (Blade UI)  │ ◀─────────────── │  (Nginx + PHP-FPM)  │
+└─────────────┘                  └─────────┬─────────┘
+                                            │
+                                            ▼
+                                  ┌──────────────────┐
+                                  │  MySQL Database     │
+                                  │  branches, users,   │
+                                  │  shifts, attendance │
+                                  └──────────────────┘
+```
 
-## Security Vulnerabilities
+### Data Model (ER Diagram)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```
+Branch (1) ───< Department (1) ───< Employee (M) ───(belongsTo)── User (1)
+Employee (1) ───< ShiftAssignment (M) >─── Shift (1)
+ShiftAssignment (1) ───< AttendanceRecord (1)
+```
 
-## License
+**Why `shifts` and `shift_assignments` are separate tables:** a `Shift` is a *template* (e.g. "Morning, 7am–3pm, Karen Branch"). A `ShiftAssignment` is a specific employee assigned to that template on a specific date. Splitting these apart is what makes attendance-status logic (late/absent) clean — without it, every shift change would require duplicating time data across every employee record.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+**Why a branch isn't a direct column on `users`:** a user's branch is always *derived* through `employee → department → branch`. This keeps branch membership tied to actual department assignment rather than a value that could drift out of sync if edited separately.
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Backend | Laravel 11 (PHP 8.2) |
+| Frontend | Blade + Tailwind CSS (via Laravel Breeze) |
+| Database | MySQL 8 |
+| Auth | Laravel Breeze |
+| Authorization | Laravel Policies |
+| Testing | PHPUnit (Feature tests) |
+| Local Dev | XAMPP |
+| Deployment | Railway |
+
+## Authorization Model
+
+| Role | Can view | Can manage |
+|---|---|---|
+| **Admin** | All branches | Create/edit/delete branches |
+| **Branch Manager** | Only their own branch | View-only for their branch's data |
+| **Staff** | Not yet exposed in UI (planned) | — |
+| **Guest** | Nothing — redirected to `/login` | — |
+
+Enforcement happens in `app/Policies/BranchPolicy.php` and is called explicitly in the controller via `$this->authorize('view', $branch)` — not via manually scattered `if` checks in Blade templates. This is verified by 4 automated feature tests in `tests/Feature/BranchPolicyTest.php`, covering the admin-bypass path, the manager-allow path, the manager-deny (cross-branch) path, and the guest-redirect path.
+
+## Local Setup
+
+```bash
+git clone https://github.com/Night-ryder254/shiftlog.git
+cd shiftlog
+
+composer install
+npm install
+
+cp .env.example .env
+php artisan key:generate
+
+# Set your DB credentials in .env, then:
+php artisan migrate:fresh --seed
+
+npm run build
+php artisan serve
+```
+
+Visit `http://127.0.0.1:8000/register` to create an account, then promote yourself via Tinker:
+
+```bash
+php artisan tinker
+```
+```php
+$user = App\Models\User::where('email', 'your@email.com')->first();
+$department = App\Models\Department::first();
+App\Models\Employee::create([
+    'user_id' => $user->id,
+    'department_id' => $department->id,
+    'role' => 'admin',
+]);
+```
+
+## Testing
+
+```bash
+php artisan test
+```
+
+Current coverage: authorization boundaries (`BranchPolicyTest`) — admin access, manager access, cross-branch denial, guest redirection. More coverage (CRUD operations, attendance logic) planned — see [Roadmap](#roadmap).
+
+## Project Structure
+
+```
+app/
+├── Http/Controllers/BranchController.php   # Branch listing + attendance dashboard
+├── Models/                                  # Branch, Department, Employee, Shift,
+│                                             # ShiftAssignment, AttendanceRecord, User
+├── Policies/BranchPolicy.php                # Authorization rules
+database/
+├── migrations/                              # Schema definitions
+├── factories/                               # Realistic fake data generators
+├── seeders/DatabaseSeeder.php               # Orchestrates seeding in dependency order
+resources/views/branches/                    # index.blade.php, show.blade.php
+tests/Feature/BranchPolicyTest.php           # Authorization test suite
+```
+
+## Roadmap
+
+- [ ] Staff self-service clock-in/clock-out flow
+- [ ] CSV export of attendance reports
+- [ ] Shift creation/editing UI for managers
+- [ ] Employee CRUD with department reassignment
+- [ ] Feature tests for Shift and Employee resources
+- [ ] Email notifications for repeated lateness/no-shows
+
+## Known Limitations
+
+- Staff role exists in the data model but has no dedicated UI yet — only Admin and Manager views are built
+- Clock-in/clock-out is currently only seeded data, not a live-action feature yet
+- No CSV export implemented yet (listed as a business requirement, planned for next iteration)
+
+## Author
+
+**Nigel Matekwa Alufwani**
+[GitHub](https://github.com/Night-ryder254) · nigelmatekwa@gmail.com
